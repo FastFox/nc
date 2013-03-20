@@ -22,19 +22,18 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 
 	% Initialize static parameters
-	m = ...
-	rho = ...
-	alpha = ...
-	beta = ...
+	m = 50
+	rho = 0.5
+	alpha = 1
+	beta = 5
 
 	% Compute a reference tour using the nearest neighbor method
-	C_nn = ...
+	C_nn = nn_shortest_tour_tsp(tsp_instance);
 
 	% Initialize pheromone matrix
-	pheromones = ...
-
+	pheromones = zeros(m,m);
 	% Initialize heuristic desirability matrix
-	heuristics = ...
+	heuristics = zeros(m,m);
 
 	% Statistics data
 	evalcount = 0;
@@ -60,7 +59,7 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 			tabu_list = ones(1, num_cities);
 
 			% Set the startnode of the tour
-			curnode = ...
+			curnode = ceil(rand(1,1) * num_cities) %select random starting city for each ant
 			tour(k,1) = curnode;
 			tabu_list(curnode) = 0;
 
