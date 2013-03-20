@@ -22,10 +22,10 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 
 	% Initialize static parameters
-	lambda = ...
-	pc = ...
-	pm = ...
-	q = ...
+	lambda = 5; % amount of individuals
+	pc = 1; % amount between 0 and 1, chance to crossover, or just copy the parent
+	pm = 1; % ?
+	q = 1; % amount of loops in select_tournament
 
 	% Statistics data
 	evalcount = 0;
@@ -33,14 +33,15 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 	opt_tour_length = Inf;
 	opt_tour = NaN(num_cities,1);
 
+
 	% Initialize population
 	for i = 1:lambda
 
 		% Each individual is a random permutation
-		P(i,:) = ...
+		P(i,:) = ceil(rand(1, num_cities) * num_cities);
 
 		% Evaluate the individual
-		f(i) = ...
+		f(i) = 1;
 
 		% Increase counter after each evaluation and update statistics
 		evalcount = evalcount + 1;
@@ -53,31 +54,37 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 	end
 
 	% Evolution loop
+	%disp('evalcount')
+	%disp(evalcount)
 	while evalcount < eval_budget
-
+		% disp('Hi')
 		% Increase generation counter
 		gencount = gencount + 1;
 
 		% Generate new population Pnew (recombination, mutation)
+		
 		for i = 1:lambda
 
 			% Select parent
 			p1 = select_tournament(P, f, q);
-
+			% disp(p1);
 			if (rand() < pc)
-
+				%Pnew(i,:) 
 				% Apply crossover
-				...
+				%...
 
 			else
 
 				% No crossover, copy parent
-				...
+				%...
 
 			end
 
 			% Apply mutation
-			...
+			% disp(p1(ceil(rand()*10),:))
+
+			%...
+			Pnew(i,:) = p1;
 
 		end
 
@@ -88,7 +95,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 		for i = 1:lambda
 
 			% Evaluate the tour of each individual
-			f(i) = ...
+			f(i) = 1;
 
 			% Increase counter after each evaluation and update statistics
 			evalcount = evalcount + 1;
@@ -104,8 +111,9 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 		[hist_generation_opt_tour_length, generation_opt_tour_index] = min(f);
 		generation_opt_tour = P(generation_opt_tour_index,:);
 		hist_generation_opt_tour(gencount) = hist_generation_opt_tour_length;
-
+			
 		if (doplot)
+			
 			% Plot statistics
 			clf
 
