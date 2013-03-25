@@ -6,7 +6,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 % Input:
 % - tsp_instance        - string containing the TSP instance name
 % - eval_budget         - the number of function evaluations available
-%                         for the optimization algorithm
+%                         for the optimization algorithm (number of generations?)
 %
 % Output:
 % - opt_tour            - a vector containing the best tour found
@@ -22,10 +22,10 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 	%vpa(distance_matrix, 8)
 	% Initialize static parameters
-	lambda = 50; % amount of individuals
+	lambda = 5; % amount of individuals
 	pc = 1; % amount between 0 and 1, chance to crossover, or just copy the parent
 	pm = 1; % ?
-	q = 1; % amount of loops in select_tournament
+	q = 3; % amount of loops in select_tournament
 
 	% Statistics data
 	evalcount = 0;
@@ -33,13 +33,17 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 	opt_tour_length = Inf;
 	opt_tour = NaN(num_cities,1);
 
+	cities = [1:num_cities];
 
 	% Initialize population
 	for i = 1:lambda
 
 		% Each individual is a random permutation
-		P(i,:) = ceil(rand(1, num_cities) * num_cities);
-
+		%r = ceil(rand(1) * num_cities)
+		%P(i,:) = ceil(rand(1, num_cities) * num_cities); % Every city is random, and can be visited none, one or more times.
+		%P(i,:) = mod([r:(r+num_cities-1)], num_cities) + 1 % 1 - 38, from random starting point.
+		P(i,:) = cities(randperm(num_cities)); % random sequence of the cities
+		
 		% Evaluate the individual
 		f(i) = evaluate(P(i,:), distance_matrix);
 
@@ -67,6 +71,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 
 			% Select parent
 			p1 = select_tournament(P, f, q);
+			p2 = select_tournament(P, f, q);
 			% disp(p1);
 			if (rand() < pc)
 				%Pnew(i,:) 
@@ -141,10 +146,11 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 end
 
 function e = evaluate(t, distance_matrix)
-	visited = false(t,1)
+	
+	%visited = false(t,1)
 	e = 0.0;
 	for i = 1:length(t)
-		visited(t(i)) = true
+		%visited(t(i)) = true
 		if i ~= length(t)
 			%distance_matrix(t(i), t(i+1))
 			e = e + distance_matrix(t(i), t(i+1));
