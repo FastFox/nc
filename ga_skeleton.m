@@ -20,9 +20,9 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 
 	% Retrieve the city coordinates, distance matrix, and number of cities
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
-
+	%vpa(distance_matrix, 8)
 	% Initialize static parameters
-	lambda = 5; % amount of individuals
+	lambda = 50; % amount of individuals
 	pc = 1; % amount between 0 and 1, chance to crossover, or just copy the parent
 	pm = 1; % ?
 	q = 1; % amount of loops in select_tournament
@@ -41,7 +41,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 		P(i,:) = ceil(rand(1, num_cities) * num_cities);
 
 		% Evaluate the individual
-		f(i) = 1;
+		f(i) = evaluate(P(i,:), distance_matrix);
 
 		% Increase counter after each evaluation and update statistics
 		evalcount = evalcount + 1;
@@ -95,7 +95,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 		for i = 1:lambda
 
 			% Evaluate the tour of each individual
-			f(i) = 1;
+			f(i) = evaluate(P(i,:), distance_matrix);
 
 			% Increase counter after each evaluation and update statistics
 			evalcount = evalcount + 1;
@@ -138,6 +138,20 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 
 	end
 
+end
+
+function e = evaluate(t, distance_matrix)
+	visited = false(t,1)
+	e = 0.0;
+	for i = 1:length(t)
+		visited(t(i)) = true
+		if i ~= length(t)
+			%distance_matrix(t(i), t(i+1))
+			e = e + distance_matrix(t(i), t(i+1));
+		else
+			e = e + distance_matrix(t(i), t(1));
+		end
+	end
 end
 
 function a = select_tournament(P, f, q)
