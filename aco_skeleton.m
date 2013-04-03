@@ -22,18 +22,19 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 
 	% Initialize static parameters
-	m = 50
-	rho = 0.5
-	alpha = 1
-	beta = 5
+	m = 50;
+	rho = 0.5;
+	alpha = 1;
+	beta = 5;
 
 	% Compute a reference tour using the nearest neighbor method
-	C_nn = nn_shortest_tour_tsp(tsp_instance);
+	[nn_tour, C_nn] = nn_shortest_tour_tsp(tsp_instance);
 
 	% Initialize pheromone matrix
-	pheromones = zeros(m,m);
+	pheromones = ones(num_cities,num_cities);
+    
 	% Initialize heuristic desirability matrix
-	heuristics = zeros(m,m);
+	heuristics = distance_matrix;
 
 	% Statistics data
 	evalcount = 0;
@@ -54,26 +55,33 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 
 		% Construct new tours for the ants
 		for k = 1:m
-
 			% Administrate the cities that were already visited
 			tabu_list = ones(1, num_cities);
 
 			% Set the startnode of the tour
-			curnode = ceil(rand(1,1) * num_cities) %select random starting city for each ant
+			curnode = ceil(rand(1,1) * num_cities); %%select random starting city for each ant
 			tour(k,1) = curnode;
 			tabu_list(curnode) = 0;
 
 			% Construct the path
 			for j = 2:num_cities
-
-				% Compute probabilities
-				step_probabilities = ...
+                % Compute probabilities
+                tau = pheromones(curnode,:).^alpha;
+                etha = heuristics(curnode,:).^beta;
+                sum_probabilities = sum(tau .* etha);
+                if sum_probabilities == 0
+                    step_probabilities = zeros(1,num_cities);
+                else
+                    step_probabilities = tabu_list .* (tau .* etha)/sum_probabilities;
+                end
+                
+				%step_probabilities = ((pheromones(:,curnode).^alpha ) .* (distance_matrix(:,curnode).^beta))./sum((pheromones(:,curnode).^alpha) .* (distance_matrix(:,curnode).^beta))
 
 				% Select the next city based on the probabilities
 				cumsum_step_probabilities = cumsum(step_probabilities);
 				r = rand() * cumsum_step_probabilities(num_cities);
-        indices = find(cumsum_step_probabilities > r);
-        curnode = indices(1);
+                indices = find(cumsum_step_probabilities > r);
+                curnode = indices(1);
 
 				% Add the selected city to the tour and update the tabu list
 				tour(k,j) = curnode;
@@ -85,7 +93,7 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 
 		% Evaluate: compute tour lengths
 		for k = 1:m
-			tour_length(k) = ...
+			tour_length(k) = sum(tour(k,:));
 
 			% Increase counter after each evaluation and update statistics
 			evalcount = evalcount + 1;
@@ -97,7 +105,14 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 		end
 
 		% Update pheromones
-		new_pheromones = ...
+		new_pheromones = zeros(num_cities,num_cities);
+        for k = 1:m
+            tour(k,:)
+            for i = 1:(num_cities-1)
+                new_pheromones(tour(k,i),tour(k,i+1)) = new_pheromones(tour(k,i),tour(k,i+1)) + (1 / tour_length(k));
+            end
+        end
+        %new_pheromones = ones(num_cities,num_cities);
 		pheromones = (1 - rho) * pheromones + new_pheromones;
 
 		% Generation best statistics
