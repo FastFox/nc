@@ -22,10 +22,10 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 	%vpa(distance_matrix, 8)
 	% Initialize static parameters
-	lambda = 2; % amount of individuals
+	lambda = 200; % amount of individuals
 	pc = 1; % amount between 0 and 1, chance to crossover, or just copy the parent
 	pm = 1; % ?
-	q = 3; % amount of loops in select_tournament
+	q = 5; % amount of loops in select_tournament
 
 	% Statistics data
 	evalcount = 0;
@@ -75,25 +75,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 			% disp(p1);
 			if (rand() < pc)
 				%Pnew(i,:) 
-				points = ceil(rand(2,1)*num_cities);
-				if (points(1) > points(2))
-					points = [points(2); points(1)];
-				end
-				
-				c1 = p1(points(1):points(2));
-				
-				for j = 1:num_cities
-					if j < points(1) || j > points(2)
-						k = j
-						while ismember(p2(k),c1) == 1
-							k = find(p1 == p2(k));
-						end
-						
-						c1(j) = p2(k);
-					end
-				end
-
-				c1
+				[c1, c2] = pmx(p1, p2);
 				 
 				% Apply crossover
 				%...
@@ -109,7 +91,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 			% disp(p1(ceil(rand()*10),:))
 
 			%...
-			Pnew(i,:) = p1;
+			Pnew(i,:) = c1;
 
 		end
 
@@ -201,4 +183,35 @@ function a = select_tournament(P, f, q)
 	[maxF, maxIndex] = min(Ftournament);
 	a = Ptournament(maxIndex,:);
 
+end
+
+function [c1, c2] = pmx(p1, p2)
+	points = ceil(rand(2,1)*size(p1,2));
+	if (points(1) > points(2))
+		points = [points(2); points(1)];
+	end
+
+	c1(points(1):points(2)) = p1(points(1):points(2));
+		
+	for j = 1:size(p1,2)
+		if j < points(1) || j > points(2)
+			k = j;
+			while ismember(p2(k),c1) == 1
+				k = find(p1 == p2(k));
+			end					
+			c1(j) = p2(k);
+		end
+	end
+
+	c2(points(1):points(2)) = p2(points(1):points(2));
+
+	for j = 1:size(p2,2)
+		if j < points(1) || j > points(2)
+			k = j;
+			while ismember(p1(k),c2) == 1
+				k = find(p2 == p1(k));
+			end					
+			c2(j) = p1(k);
+		end
+	end
 end
