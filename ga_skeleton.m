@@ -82,6 +82,8 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 
 			else
 
+				c1 = p1;
+				c2 = p2;
 				% No crossover, copy parent
 				%...
 
@@ -89,6 +91,12 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 
 			% Apply mutation
 			% disp(p1(ceil(rand()*10),:))
+			a = ceil(rand() * num_cities);
+			b = ceil(rand() * num_cities);
+			c1([a b]) = c1([b a]);
+			a = ceil(rand() * num_cities);
+			b = ceil(rand() * num_cities);
+			%c1([a b]) = c1([b a]);
 
 			%...
 			Pnew(i,:) = c1;
