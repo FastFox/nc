@@ -107,7 +107,7 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 		% Update pheromones
 		new_pheromones = zeros(num_cities,num_cities);
         for k = 1:m
-            tour(k,:)
+            %tour(k,:)
             for i = 1:(num_cities-1)
                 new_pheromones(tour(k,i),tour(k,i+1)) = new_pheromones(tour(k,i),tour(k,i+1)) + (1 / tour_length(k));
             end
