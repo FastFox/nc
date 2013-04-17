@@ -22,9 +22,9 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 
 	% Initialize static parameters
-	pm = 0.2; % perturbation of mutation / percentage of positions to be changed.
-	alpha = 0.8; % temperature decrease after each step
-	k = 10; % amount of iterations
+	pm = 0.1; % perturbation of mutation / percentage of positions to be changed.
+	alpha = 0.95; % temperature decrease after each step
+	k = 100; % amount of iterations
 
 	cities = [1:num_cities];
 
@@ -40,7 +40,7 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 	% Generate initial solution and evaluate
 	%s = cities(randperm(num_cities)); % random sequence of the cities
 	s = [1:num_cities];
-	f = evaluate(s, distance_matrix);
+	f = evaluate_tour(distance_matrix, s)
 
 	% Increase counter after each evaluation and update statistics
 	evalcount = evalcount + 1;
@@ -51,7 +51,7 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 	end
 
 	% Set initial temperature
-	T = 5;
+	T = 10;
 
 	while evalcount < eval_budget
 
@@ -62,7 +62,7 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 
 			% Generate and evaluate permutation of s
 			s_new = perturb(s, num_cities, pm);
-			f_new = evaluate(s, distance_matrix);
+			f_new = evaluate_tour(distance_matrix, s_new);
 
 			% Increase counter after each evaluation and update statistics
 			evalcount = evalcount + 1;
@@ -76,6 +76,7 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 			deltaE = f_new - f;
 			if (deltaE <= 0 | rand() < exp(- deltaE / T))
 				s = s_new;
+				f = f_new;
 			end
 
 			% Generation best statistics
@@ -86,6 +87,10 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 			if (doplot)
 				% Plot statistics
 				clf
+
+			subplot(2,3,6)
+			plot_tsp_tour(coordinates, s_new)
+			title('New tour after mutation')
 
 				subplot(2,3,1)
 				plot(hist_length_best_so_far(1:evalcount))
@@ -122,28 +127,9 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 end
 
 function s = perturb(s, num_cities, pm)
-	display('hi');
-	s
 	for i=1:ceil(num_cities * pm)
 		a = ceil(rand() * num_cities);
 		b = ceil(rand() * num_cities);
 		s([a b]) = s([b a]);
-	end
-	s
-end
-
-
-	
-function e = evaluate(t, distance_matrix)
-	%visited = false(t,1)
-	e = 0.0;
-	for i = 1:length(t)
-		%visited(t(i)) = true
-		if i ~= length(t)
-			%distance_matrix(t(i), t(i+1))
-			e = e + distance_matrix(t(i), t(i+1));
-		else
-			e = e + distance_matrix(t(i), t(1));
-		end
 	end
 end

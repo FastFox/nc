@@ -45,7 +45,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 		P(i,:) = cities(randperm(num_cities)); % random sequence of the cities
 		
 		% Evaluate the individual
-		f(i) = evaluate(P(i,:), distance_matrix);
+		f(i) = evaluate_tour(distance_matrix, P(i,:));
 
 		% Increase counter after each evaluation and update statistics
 		evalcount = evalcount + 1;
