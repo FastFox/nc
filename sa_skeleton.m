@@ -22,11 +22,11 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 
 	% Initialize static parameters
-	pm = 0.1; % perturbation of mutation / percentage of positions to be changed.
-	alpha = 0.95; % temperature decrease after each step
+	pm = 0.03; % perturbation of mutation / percentage of positions to be changed.
+	alpha = 0.97; % temperature decrease after each step
 	k = 100; % amount of iterations
 
-	cities = [1:num_cities];
+	%cities = [1:num_cities];
 
 	% Statistics data
 	evalcount = 0;
@@ -39,8 +39,8 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 
 	% Generate initial solution and evaluate
 	%s = cities(randperm(num_cities)); % random sequence of the cities
-	s = [1:num_cities];
-	f = evaluate_tour(distance_matrix, s)
+	s = randperm(num_cities);%[1:num_cities];
+	f = evaluate_tour(distance_matrix, s);
 
 	% Increase counter after each evaluation and update statistics
 	evalcount = evalcount + 1;
@@ -51,7 +51,7 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 	end
 
 	% Set initial temperature
-	T = 10;
+	T = 750;
 
 	while evalcount < eval_budget
 
@@ -74,7 +74,7 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 
 			% Choose to accept or reject the permutation
 			deltaE = f_new - f;
-			if (deltaE <= 0 | rand() < exp(- deltaE / T))
+			if (deltaE <= 0 || rand() < exp(- deltaE / T))
 				s = s_new;
 				f = f_new;
 			end
