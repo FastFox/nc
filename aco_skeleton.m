@@ -23,9 +23,9 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 
 	% Initialize static parameters
 	m = 50;
-	rho = 0.5;
+	rho = 0.5; %0.1/0.5
 	alpha = 1;
-	beta = 5;
+	beta = 5; %2/5
 
 	% Compute a reference tour using the nearest neighbor method
 	[nn_tour, C_nn] = nn_shortest_tour_tsp(tsp_instance);
@@ -34,9 +34,9 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 	pheromones = repmat(0.01,num_cities,num_cities); %%initialize pheremones to small value
     
 	% Initialize heuristic desirability matrix
-	heuristics = 1 ./ (distance_matrix + 0.001);
+	heuristics = 1 ./ distance_matrix;
     heuristics(logical(eye(size(heuristics)))) = 0;
-    heuristics = heuristics * 10000;
+    heuristics = heuristics * C_nn;
 
 	% Statistics data
 	evalcount = 0;
@@ -90,7 +90,7 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 
 		% Evaluate: compute tour lengths
 		for k = 1:m
-			tour_length(k) = evaluate(tour(k,:),distance_matrix);
+			tour_length(k) = evaluate_tour(distance_matrix,tour(k,:));
 
 			% Increase counter after each evaluation and update statistics
 			evalcount = evalcount + 1;
@@ -106,7 +106,7 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
         for k = 1:m
             %tour(k,:)
             for i = 1:(num_cities-1)
-                new_pheromones(tour(k,i),tour(k,i+1)) = new_pheromones(tour(k,i),tour(k,i+1)) + (5 / tour_length(k));
+                new_pheromones(tour(k,i),tour(k,i+1)) = new_pheromones(tour(k,i),tour(k,i+1)) + ((C_nn * 10) / tour_length(k));
             end
         end
 		pheromones = (1 - rho) * pheromones + new_pheromones;
@@ -155,21 +155,6 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 
 		end
 
-	end
-
-end
-
-function e = evaluate(t, distance_matrix)
-	
-	%visited = false(t,1)
-	e = 0.0;
-	for i = 1:length(t)
-		%visited(t(i)) = true
-		if i ~= length(t)
-			%distance_matrix(t(i), t(i+1))
-			e = e + distance_matrix(t(i), t(i+1));
-		else
-			e = e + distance_matrix(t(i), t(1));
-		end
-	end
+    end
+    %opt_tour_length
 end
