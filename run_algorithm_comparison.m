@@ -13,10 +13,10 @@ function [] = run_algorithm_comparison()
 	% Comparison setup
 	runs_per_optimizer = 1; 
 	eval_budget = 10000;
-	problems = { ...
-		'Djibouti', ...
-		'Qatar', ...
-		'Uruguay', ...
+	problems = {
+		'Djibouti'%,
+		%'Qatar',
+		%'Uruguay',
 	%	'Zimbabwe', ... % optional
 	%	'Italy', ...	% optional
 	};
