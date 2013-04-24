@@ -33,8 +33,6 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 	opt_tour_length = Inf;
 	opt_tour = NaN(num_cities,1);
 
-	cities = [1:num_cities];
-
 	% Initialize population
 	for i = 1:lambda
 
@@ -42,7 +40,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 		%r = ceil(rand(1) * num_cities)
 		%P(i,:) = ceil(rand(1, num_cities) * num_cities); % Every city is random, and can be visited none, one or more times.
 		%P(i,:) = mod([r:(r+num_cities-1)], num_cities) + 1 % 1 - 38, from random starting point.
-		P(i,:) = cities(randperm(num_cities)); % random sequence of the cities
+		P(i,:) = randperm(num_cities); % random sequence of the cities
 		
 		% Evaluate the individual
 		f(i) = evaluate_tour(distance_matrix, P(i,:));
