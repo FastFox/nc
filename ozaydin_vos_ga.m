@@ -23,7 +23,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 	%vpa(distance_matrix, 8)
 	% Initialize static parameters
 	lambda = 200; % amount of individuals
-	pc = 1; % amount between 0 and 1, chance to crossover, or just copy the parent
+	pc = 0.8; % amount between 0 and 1, chance to crossover, or just copy the parent
 	pm = 1; % ?
 	q = 5; % amount of loops in select_tournament
 
