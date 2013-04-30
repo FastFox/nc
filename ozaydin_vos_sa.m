@@ -16,14 +16,14 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 % Last modified: February 4, 2011
 
 	% Set true to do online statistics plotting
-	doplot = true;
+	doplot = false;
 
 	% Retrieve the city coordinates, distance matrix, and number of cities
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 
 	% Initialize static parameters
-	pm = 0.03; % perturbation of mutation / percentage of positions to be changed.
-	alpha = 0.97; % temperature decrease after each step
+	pm = 0.04; % perturbation of mutation / percentage of positions to be changed.
+	alpha = 0.90; % temperature decrease after each step
 	k = 100; % amount of iterations
 
 	%cities = [1:num_cities];

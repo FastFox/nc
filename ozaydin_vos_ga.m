@@ -16,16 +16,16 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 % Last modified: February 4, 2011
 
 	% Set true to do online statistics plotting
-	doplot = true;
+	doplot = false;
 
 	% Retrieve the city coordinates, distance matrix, and number of cities
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 	%vpa(distance_matrix, 8)
 	% Initialize static parameters
-	lambda = 200; % amount of individuals
+	lambda = 50; % amount of individuals
 	pc = 0.8; % amount between 0 and 1, chance to crossover, or just copy the parent
-	pm = 1; % ?
-	q = 5; % amount of loops in select_tournament
+	pm = 0.005; % ?
+	q = 70; % amount of loops in select_tournament
 
 	% Statistics data
 	evalcount = 0;
@@ -89,11 +89,12 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 
 			% Apply mutation
 			% disp(p1(ceil(rand()*10),:))
-			a = ceil(rand() * num_cities);
-			b = ceil(rand() * num_cities);
-			c1([a b]) = c1([b a]);
-			a = ceil(rand() * num_cities);
-			b = ceil(rand() * num_cities);
+			%a = ceil(rand() * num_cities);
+			%b = ceil(rand() * num_cities);
+			%c1([a b]) = c1([b a]);
+			%a = ceil(rand() * num_cities);
+			%b = ceil(rand() * num_cities);
+			c1 = mutation(c1, num_cities, pm);
 			%c1([a b]) = c1([b a]);
 
 			%...
@@ -219,5 +220,13 @@ function [c1, c2] = pmx(p1, p2)
 			end					
 			c2(j) = p1(k);
 		end
+	end
+end
+
+function s = mutation(s, num_cities, pm)
+	for i=1:ceil(num_cities * pm)
+		a = ceil(rand() * num_cities);
+		b = ceil(rand() * num_cities);
+		s([a b]) = s([b a]);
 	end
 end
