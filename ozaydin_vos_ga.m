@@ -16,7 +16,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 % Last modified: February 4, 2011
 
 	% Set true to do online statistics plotting
-	doplot = false;
+	doplot = true;
 
 	% Retrieve the city coordinates, distance matrix, and number of cities
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
@@ -109,7 +109,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 		for i = 1:lambda
 
 			% Evaluate the tour of each individual
-			f(i) = evaluate(P(i,:), distance_matrix);
+			f(i) = evaluate_tour(distance_matrix, P(i,:));
 
 			% Increase counter after each evaluation and update statistics
 			evalcount = evalcount + 1;
@@ -152,21 +152,6 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 
 	end
 
-end
-
-function e = evaluate(t, distance_matrix)
-	
-	%visited = false(t,1)
-	e = 0.0;
-	for i = 1:length(t)
-		%visited(t(i)) = true
-		if i ~= length(t)
-			%distance_matrix(t(i), t(i+1))
-			e = e + distance_matrix(t(i), t(i+1));
-		else
-			e = e + distance_matrix(t(i), t(1));
-		end
-	end
 end
 
 function a = select_tournament(P, f, q)
