@@ -16,27 +16,27 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 % Last modified: June 7, 2012
 
 	% Set true to do online statistics plotting
-	doplot = true;
+	doplot = false;
 
 	% Retrieve the city coordinates, distance matrix, and number of cities
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 
 	% Initialize static parameters
 	m = 50;
-	rho = 0.5;
+	rho = 0.2;
 	alpha = 1;
-	beta = 5;
+	beta = 4;
+    Q = 3;
 
 	% Compute a reference tour using the nearest neighbor method
 	[nn_tour, C_nn] = nn_shortest_tour_tsp(tsp_instance);
 
-	% Initialize pheromone matrix
-	pheromones = repmat(0.01,num_cities,num_cities); %%initialize pheremones to small value
+	% Initialize pheromone matrix to small value
+	pheromones = repmat(0.0001,num_cities,num_cities);
     
 	% Initialize heuristic desirability matrix
-	heuristics = 1 ./ (distance_matrix + 0.001);
+	heuristics = 1 ./ distance_matrix;
     heuristics(logical(eye(size(heuristics)))) = 0;
-    heuristics = heuristics * 10000;
 
 	% Statistics data
 	evalcount = 0;
@@ -71,8 +71,6 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
                 tau = pheromones(curnode,:).^alpha;
                 etha = heuristics(curnode,:).^beta;
                 step_probabilities = tabu_list .* (tau .* etha)/sum(tau .* etha);
-                
-				%step_probabilities = ((pheromones(:,curnode).^alpha ) .* (distance_matrix(:,curnode).^beta))./sum((pheromones(:,curnode).^alpha) .* (distance_matrix(:,curnode).^beta))
 
 				% Select the next city based on the probabilities
 				cumsum_step_probabilities = cumsum(step_probabilities);
@@ -90,7 +88,7 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 
 		% Evaluate: compute tour lengths
 		for k = 1:m
-			tour_length(k) = evaluate(tour(k,:),distance_matrix);
+			tour_length(k) = evaluate_tour(distance_matrix,tour(k,:));
 
 			% Increase counter after each evaluation and update statistics
 			evalcount = evalcount + 1;
@@ -106,8 +104,11 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
         for k = 1:m
             %tour(k,:)
             for i = 1:(num_cities-1)
-                new_pheromones(tour(k,i),tour(k,i+1)) = new_pheromones(tour(k,i),tour(k,i+1)) + (5 / tour_length(k));
+                new_pheromones(tour(k,i),tour(k,i+1)) = new_pheromones(tour(k,i),tour(k,i+1)) + (Q / tour_length(k));
+                new_pheromones(tour(k,i+1),tour(k,i)) = new_pheromones(tour(k,i),tour(k,i+1));
             end
+            new_pheromones(tour(k,num_cities),tour(k,1)) = new_pheromones(tour(k,num_cities),tour(k,1)) + (Q / tour_length(k));
+            new_pheromones(tour(k,1),tour(k,num_cities)) = new_pheromones(tour(k,num_cities),tour(k,1));
         end
 		pheromones = (1 - rho) * pheromones + new_pheromones;
 
@@ -115,8 +116,6 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 		[hist_generation_opt_tour_length, generation_opt_tour_index] = min(tour_length);
 		generation_opt_tour = tour(generation_opt_tour_index,:);
 		hist_generation_opt_tour(gencount) = hist_generation_opt_tour_length;
-        
-        opt_tour_length
 
 		if (doplot)
 			% Plot statistics
@@ -153,23 +152,7 @@ function [opt_tour, opt_tour_length] = aco_skeleton(tsp_instance, eval_budget)
 			title('Heuristic desirability matrix')
 			drawnow()
 
-		end
-
-	end
-
-end
-
-function e = evaluate(t, distance_matrix)
-	
-	%visited = false(t,1)
-	e = 0.0;
-	for i = 1:length(t)
-		%visited(t(i)) = true
-		if i ~= length(t)
-			%distance_matrix(t(i), t(i+1))
-			e = e + distance_matrix(t(i), t(i+1));
-		else
-			e = e + distance_matrix(t(i), t(1));
-		end
-	end
+        end
+    end
+    opt_tour_length
 end

@@ -16,7 +16,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 % Last modified: February 4, 2011
 
 	% Set true to do online statistics plotting
-	doplot = true;
+	doplot = false;
 
 	% Retrieve the city coordinates, distance matrix, and number of cities
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);

@@ -22,9 +22,12 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 
 	% Initialize static parameters
-	pm = 0.04; % perturbation of mutation / percentage of positions to be changed.
-	alpha = 0.90; % temperature decrease after each step
+	pm = 0.004; % perturbation of mutation / percentage of positions to be changed.
+	alpha = 0.9; % temperature decrease after each step
 	k = 100; % amount of iterations
+	
+	% Set initial temperature
+	T = 3200;
 
 	%cities = [1:num_cities];
 
@@ -49,9 +52,10 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 		opt_tour_length = f;
 		opt_tour = s;
 	end
+	
+	sum_total = 0;
+	total = 0;
 
-	% Set initial temperature
-	T = 750;
 
 	while evalcount < eval_budget
 
@@ -74,6 +78,10 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 
 			% Choose to accept or reject the permutation
 			deltaE = f_new - f;
+			if (deltaE > 0) 
+				sum_total = sum_total + deltaE;
+				total = total + 1;
+			end
 			if (deltaE <= 0 || rand() < exp(- deltaE / T))
 				s = s_new;
 				f = f_new;
@@ -123,6 +131,8 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 		T = alpha * T; % Exponential
 
 	end
+
+	% average = sum_total / total
 
 end
 

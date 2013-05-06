@@ -14,9 +14,9 @@ function [] = run_algorithm_comparison()
 	runs_per_optimizer = 1; 
 	eval_budget = 10000;
 	problems = {
-		'Djibouti'%,
+		%'Djibouti',
 		%'Qatar',
-		%'Uruguay',
+		'Uruguay',
 	%	'Zimbabwe', ... % optional
 	%	'Italy', ...	% optional
 	};
