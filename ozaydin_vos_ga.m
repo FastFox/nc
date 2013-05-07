@@ -24,7 +24,7 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 	% Initialize static parameters
 	lambda = 50; % amount of individuals
 	pc = 0.8; % amount between 0 and 1, chance to crossover, or just copy the parent
-	pm = 0.005; % ?
+	pm = 4; % Fixed amount of mutations
 	q = 70; % amount of loops in select_tournament
 
 	% Statistics data
@@ -189,7 +189,7 @@ function [c1, c2] = pmx(p1, p2)
 end
 
 function s = mutation(s, num_cities, pm)
-	for i=1:ceil(num_cities * pm)
+	for i=1:pm
 		a = ceil(rand() * num_cities);
 		b = ceil(rand() * num_cities);
 		s([a b]) = s([b a]);

@@ -22,7 +22,7 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 
 	% Initialize static parameters
-	pm = 0.004; % perturbation of mutation / percentage of positions to be changed.
+	pm = 4; % Fixed amount of mutations
 	alpha = 0.9; % temperature decrease after each step
 	k = 100; % amount of iterations
 	
@@ -130,7 +130,7 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 end
 
 function s = perturb(s, num_cities, pm)
-	for i=1:ceil(num_cities * pm)
+	for i=1:pm
 		a = ceil(rand() * num_cities);
 		b = ceil(rand() * num_cities);
 		s([a b]) = s([b a]);
