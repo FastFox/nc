@@ -56,50 +56,30 @@ function [opt_tour, opt_tour_length] = ga_skeleton(tsp_instance, eval_budget)
 	end
 
 	% Evolution loop
-	%disp('evalcount')
-	%disp(evalcount)
 	while evalcount < eval_budget
-		% disp('Hi')
 		% Increase generation counter
 		gencount = gencount + 1;
 
 		% Generate new population Pnew (recombination, mutation)
-		
 		for i = 1:lambda
 
 			% Select parent
 			p1 = select_tournament(P, f, q);
 			p2 = select_tournament(P, f, q);
-			% disp(p1);
+
 			if (rand() < pc)
-				%Pnew(i,:) 
 				[c1, c2] = pmx(p1, p2);
-				 
-				% Apply crossover
-				%...
-
 			else
-
+				% No crossover, copy parent
 				c1 = p1;
 				c2 = p2;
-				% No crossover, copy parent
-				%...
 
 			end
 
 			% Apply mutation
-			% disp(p1(ceil(rand()*10),:))
-			%a = ceil(rand() * num_cities);
-			%b = ceil(rand() * num_cities);
-			%c1([a b]) = c1([b a]);
-			%a = ceil(rand() * num_cities);
-			%b = ceil(rand() * num_cities);
 			c1 = mutation(c1, num_cities, pm);
-			%c1([a b]) = c1([b a]);
 
-			%...
 			Pnew(i,:) = c1;
-
 		end
 
 		% Replace old population by new population

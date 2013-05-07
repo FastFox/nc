@@ -52,10 +52,6 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 		opt_tour_length = f;
 		opt_tour = s;
 	end
-	
-	sum_total = 0;
-	total = 0;
-
 
 	while evalcount < eval_budget
 
@@ -127,12 +123,9 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 		end
 
 		% Temperature update
-		% T -= alpha;
 		T = alpha * T; % Exponential
 
 	end
-
-	% average = sum_total / total
 
 end
 
