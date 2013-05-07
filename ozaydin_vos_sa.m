@@ -74,10 +74,6 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 
 			% Choose to accept or reject the permutation
 			deltaE = f_new - f;
-			if (deltaE > 0) 
-				sum_total = sum_total + deltaE;
-				total = total + 1;
-			end
 			if (deltaE <= 0 || rand() < exp(- deltaE / T))
 				s = s_new;
 				f = f_new;
