@@ -22,8 +22,8 @@ function [opt_tour, opt_tour_length] = sa_skeleton(tsp_instance, eval_budget)
 	[num_cities, coordinates, distance_matrix] = analyze_tsp(tsp_instance);
 
 	% Initialize static parameters
-	pm = 4; % Fixed amount of mutations
-	alpha = 0.9; % temperature decrease after each step
+	pm = 1; % Fixed amount of mutations
+	alpha = 0.95; % temperature decrease after each step
 	k = 100; % amount of iterations
 	
 	% Set initial temperature
